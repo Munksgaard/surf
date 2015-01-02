@@ -30,6 +30,7 @@ static Bool enableinspector = TRUE;
 static Bool loadimages = TRUE;
 static Bool hidebackground  = FALSE;
 static Bool allowgeolocation = TRUE;
+static char *rndphraseseed = "";
 
 #define SETPROP(p, q) { \
 	.v = (char *[]){ "/bin/sh", "-c", \
@@ -101,5 +102,6 @@ static Key keys[] = {
     { MODKEY|GDK_SHIFT_MASK,GDK_m,      togglestyle, { 0 } },
     { MODKEY|GDK_SHIFT_MASK,GDK_b,      togglescrollbars, { 0 } },
     { MODKEY|GDK_SHIFT_MASK,GDK_g,      togglegeolocation, { 0 } },
+    { MODKEY,               GDK_at,     insertrndphrase, { 0 } },
 };
 

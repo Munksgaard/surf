@@ -25,6 +25,7 @@
 #include <stdarg.h>
 
 #include "arg.h"
+#include "rndphrase.h"
 
 char *argv0;
 
@@ -91,6 +92,7 @@ static char *buildpath(const char *path);
 static gboolean buttonrelease(WebKitWebView *web, GdkEventButton *e,
 		GList *gl);
 static void cleanup(void);
+static void insertrndphrase(Client *c, const Arg *arg);
 static void clipboard(Client *c, const Arg *arg);
 
 /* Cookiejar implementation */
@@ -1401,6 +1403,30 @@ zoom(Client *c, const Arg *arg) {
 		c->zoomed = FALSE;
 		webkit_web_view_set_zoom_level(c->view, 1.0);
 	}
+}
+
+static void insertrndphrase(Client *c, const Arg *arg) {
+	WebKitDOMHTMLDocument * dom = (WebKitDOMHTMLDocument*)webkit_web_view_get_dom_document(c->view);
+
+	const gchar * tmp = webkit_dom_document_get_domain((WebKitDOMDocument*)dom);
+	const gchar * domain;
+	if (index(tmp, '.') != rindex(tmp, '.')) {
+		domain = index(tmp, '.') + 1;
+	} else {
+		domain = tmp;
+	}
+
+	WebKitDOMElement * act = webkit_dom_html_document_get_active_element(dom);
+	gchar *pw;
+	g_object_get (act, "value", &pw, NULL);
+
+	char hash[17];
+	rndphrase(strlen(rndphraseseed), rndphraseseed,
+		strlen(domain), (char*)domain, strlen(pw), (char*)pw, hash);
+	hash[16] = 0;
+
+	g_free(pw);
+	g_object_set(act, "value", hash, NULL);
 }
 
 int
